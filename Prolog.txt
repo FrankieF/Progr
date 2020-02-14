@@ -1,0 +1,169 @@
+%Frankie Fasola
+%Programming Languages Prolog Election Prediction
+%Professor Tinkham
+
+
+% code to show all of list
+% from Professor Tinkham
+
+?- set_prolog_flag(toplevel_print_options,
+                        [quoted(true), portray(true), attributes(portray),
+                         max_depth(0),
+                         priority(699)]).
+
+
+
+%returns a list of the canidates and their score
+%takes a list of each candiate and their attirbutes
+%first take the candiates name; we will need this to display
+%check if the  candiates state is the current state or in the same region
+%award points for commericals
+%award points for days spent in state
+%award points for elections already won
+%finally return the information
+%append the name and score into a list
+%then append that list with the other candidate lists
+
+% predict()
+predict(_, [], []).
+predict(State, [ H | T ], Prediction):-
+                make_list(State, H, P1),
+                predict(State, T, P2),
+                append( [P1], P2, Prediction).
+
+%make_list(+State, [H|T], -Prediction)
+make_list(_, [], []).
+make_list(State, [H|T], Y):-
+                check_state(State, T, Score),
+                append( [H], Score, Y).
+
+
+%check_state(+state, +[H|T])
+% checks if the state of the election and the candiates state is the same
+check_state(State, [H|T], Score) :-
+                state(State) == state(H),
+                check_region(State, H, R),
+                commercials(T, X),
+                Score is 50 + X + R.
+
+check_state(State, [H|T], Score):-
+                check_region(State, H, R),
+                commercials(T, X),
+                Score is X + R.
+
+% check_region(+State, +CState, -Value)
+% gets the region of both states and compares
+% if they are the same returns 20 points
+% else returns 0 points
+check_region(State, CState, Value):-
+                get_region(State, X),
+                get_region(CState, Y),
+                X == Y,
+                Value is 20.
+check_region(_,_,0).
+
+% Finds the region the state is in and returns a value 1-7
+get_region(State, Value):-
+                member(State, [me, nh, vt, ma, ct, ri]),
+                Value is 1.
+get_region(State, Value):-
+                member(State, [ny, pa, nj, de, md]),
+                Value is 2.
+get_region(State, Value):-
+                member(State, [va, nc, ga, fl, al, ms, tn, ky, wv, ar, la]),
+                Value is 3.
+get_region(State, Value):-
+                member(State, [oh, mi, in, il, wi, mn]),
+                Value is 4.
+get_region(State, Value):-
+                member(State, [ia, mo, nd, se, ne, ks, ok, tx]),
+                Value is 5.
+get_region(State, Value):-
+                member(State, [mt, wy, co, nm, az, ut, id, nv]),
+                Value is 6.
+get_region(State, Value):-
+                member(State, [wa, or, ca, ak, hi]),
+                Value is 7.
+
+% commercials(+[H|T, -Value)
+% Returns 1 point for every 10 commercials
+commercials([H|T], Value):-
+                days(T, D),
+                Value is div(H, 10) + D.
+
+% days(+[H|T], -Value)
+% returns 1 point for every day spent in state
+days([H|T], Value):-
+                wins(T, W),
+                Value is H + W.
+
+% wins(+[H|T], -Value)
+% returns 5 points for every win
+wins([H|_], Value):-
+                Value is H * 5.
+
+state(X):- newEngland(X).
+state(X):- northEast(X).
+state(X):- southEast(X).
+state(X):- lakes(X).
+state(X):- central(X).
+state(X):- west(X).
+state(X):- pacific(X).
+
+%the regions with each state
+newEngland(me).
+newEngland(nh).
+newEngland(vt).
+newEngland(ma).
+newEngland(ct).
+newEngland(ri).
+
+northEast(ny).
+northEast(pa).
+northEast(nj).
+northEast(de).
+northEast(md).
+
+southEast(va).
+southEast(nc).
+southEast(sc).
+southEast(ga).
+southEast(fl).
+southEast(al).
+southEast(ms).
+southEast(tn).
+southEast(ky).
+southEast(wv).
+southEast(ar).
+southEast(la).
+
+lakes(oh).
+lakes(mi).
+lakes(in).
+lakes(il).
+lakes(wi).
+lakes(mn).
+
+central(ia).
+central(mo).
+central(in).
+central(sd).
+central(ne).
+central(ks).
+central(ok).
+central(tx).
+
+west(mt).
+west(wy ).
+west(co).
+west(nm).
+west(az).
+west(ut).
+west(id).
+west(nv).
+
+pacific(wa).
+pacific(or).
+pacific(ca).
+pacific(ak).
+pacific(hi).
