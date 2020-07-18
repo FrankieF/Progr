@@ -158,8 +158,6 @@ begin
 
 end ElectionPrediction;
 
-On Mon, Mar 7, 2016 at 7:57 AM, Francis Fasola <fasolaf5@elvis.rowan.edu> wrote:
-
 
 -- Frankie Fasola
 -- -- Programming Languages Ada homework
